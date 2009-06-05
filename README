@@ -1,0 +1,29 @@
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+DEPENDENCIES
+
+(see Build.PL for latest information)
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc POE::Component::Schedule
+
+
+COPYRIGHT & LICENCE
+
+Copyright (C) 2009 Olivier Mengué
+Copyright (C) 2007-2008 Chris Fedde
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.3 or,
+at your option, any later version of Perl 5 you may have available.

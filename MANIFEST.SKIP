@@ -1,0 +1,14 @@
+^Build.bat$
+^Build$
+^Makefile$
+^_build\b
+^blib\b
+^cover_db\b
+~$
+\.swp$
+\.bak$
+\.old$
+\.old\.pl$
+\.tmp$
+\B\.svn\b
+^POE-Component-Schedule-
