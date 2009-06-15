@@ -42,8 +42,6 @@ POE::Session->create(
     },
 );
 
-# crontab DateTime set the hard way
-
 $poe_kernel->run();
 
 pass "Stopped";

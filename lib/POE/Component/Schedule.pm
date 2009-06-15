@@ -2,7 +2,7 @@ package POE::Component::Schedule;
 
 use 5.008;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ sub spawn {
                 _start => sub {
                     my ($k) = $_[KERNEL];
 
-                    $k->alias_set( $arg{'Alias'} || "Schedule" );
+                    $k->alias_set( $arg{'Alias'} || $class );
                     $k->sig( 'SHUTDOWN', 'shutdown' );
                 },
 
@@ -105,7 +105,7 @@ sub add {
     $iterator->isa('DateTime::Set')
       or die __PACKAGE__ . "->add: third arg must be a DateTime::Set";
 
-    spawn unless $Singleton;
+    $class->spawn unless $Singleton;
 
     $poe_kernel->post( $poe_kernel->ID_id_to_session($Singleton),
         'schedule', $session, $event, $iterator, $ticket, @args, );
@@ -125,7 +125,10 @@ sub delete {
     delete $Schedule_Ticket{$ticket};
 }
 
-*new = \&add;
+{
+    no warnings;
+    *new = \&add;
+}
 
 1;
 __END__
@@ -178,9 +181,9 @@ This component encapsulates a session that sends events to client sessions
 on a schedule as defined by a DateTime::Set iterator. The implementation is
 straight forward if a little limited.
 
-=head1 METHODS
+=head1 POE::Component::Schedule METHODS
 
-=head2 spawn
+=head2 spawn(Alias => I<name>)
 
 No need to call this in normal use, add() and new() all crank
 one of these up if it is needed. Start up a PoCo::Schedule. Returns a
@@ -191,6 +194,7 @@ handle that can then be added to.
 Add a set of events to the schedule. the session and event name are passed
 to POE without even checking to see if they are valid and so have the same
 warnings as ->post() itself.
+Returns a schedule handle that can be used to remove the event.
 
     $schedule->add(
         $session,
@@ -202,6 +206,8 @@ warnings as ->post() itself.
 =head2 new
 
 new is an alias for add
+
+=head1 SCHEDULE HANDLE METHODS
 
 =head2 delete
 

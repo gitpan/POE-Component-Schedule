@@ -1,5 +1,12 @@
-Revision history for SupAgent
+Revision history for POE-Component-Schedule
 
-0.01    2009-06-05T20:00 +0200    DOLMEN (Olivier Mengu�)
+0.02    2009-06-15T23:09 +0200    DOLMEN (Olivier Mengué)
+        Changed the default session alias to $class.
+        Fixed warning in Schedule.pm about new() not being used.
+        Improved test suite to increase code coverage (added 11-two.t).
+        Improved documentation for spawn().
+        Thanks to Rob Fugina for discussion.
+
+0.01    2009-06-05T19:56 +0200    DOLMEN (Olivier Mengué)
         First release to the world, with Chris Fedde's blessing.
         See http://rt.cpan.org/Public/Bug/Display.html?id=44442

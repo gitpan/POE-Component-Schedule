@@ -14,7 +14,7 @@ my $builder = Module::Build->new(
         resources => {
             homepage => 'http://code.google.com/p/poe-component-schedule/',
             repository => 'http://poe-component-schedule.googlecode.com/svn/trunk/',
-            bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Schedule'
+            bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Schedule',
         },
     },
     requires            => {
