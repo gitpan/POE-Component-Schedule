@@ -1,5 +1,12 @@
 Revision history for POE-Component-Schedule
 
+0.03    2009-06-16T19:10 +0200    DOLMEN (Olivier Mengué)
+        Major improvement of POD. Fixed sample code.
+        Improved test suite to check session reference counting.
+        Added DESTROY handler for schedule handles to automatically
+        delete handles which are not anymore referenced.
+        Deprecated ->delete().
+
 0.02    2009-06-15T23:09 +0200    DOLMEN (Olivier Mengué)
         Changed the default session alias to $class.
         Fixed warning in Schedule.pm about new() not being used.

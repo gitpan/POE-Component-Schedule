@@ -2,7 +2,7 @@ package POE::Component::Schedule;
 
 use 5.008;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use strict;
 use warnings;
@@ -36,12 +36,17 @@ sub spawn {
                 cancel       => \&_cancel,
 
                 shutdown => sub {
+                    #print "# $class shutdown\n";
                     my $k = $_[KERNEL];
 
                     # FIXME We are removing too much here!
                     $k->alarm_remove_all();
 
                     $k->sig_handled();
+                },
+                _stop => sub {
+                    #print "# $class _stop\n";
+                    $Singleton = undef;
                 },
             },
         )->ID;
@@ -125,6 +130,10 @@ sub delete {
     delete $Schedule_Ticket{$ticket};
 }
 
+sub DESTROY {
+    $_[0]->delete if exists $Schedule_Ticket{${$_[0]}};
+}
+
 {
     no warnings;
     *new = \&add;
@@ -145,41 +154,36 @@ POE::Component::Schedule - Schedule POE events using DateTime::Set iterators
     $s1 = POE::Session->create(
         inline_states => {
             _start => sub {
-                $_[KERNEL]->delay( _die_, 120 );
+                $_[HEAP]{sched} = POE::Component::Schedule->add(
+                    $_[SESSION], Tick => DateTime::Set->from_recurrence(
+                        after      => DateTime->now,
+                        before     => DateTime->now->add(seconds => 3)
+                        recurrence => sub {
+                            return $_[0]->truncate( to => 'second' )->add( seconds => 1 )
+                        },
+                    ),
+                );
             },
-
             Tick => sub {
                 print 'tick ', scalar localtime, "\n";
             },
-
-            Tock => sub {
-                print 'tock ', scalar localtime, "\n";
-            },
-
-            _die_ => sub {
-                print "_die_";
+            remove_sched => sub {
+                # Three ways to remove a schedule
+                # The first one is only for API compatibility with POE::Component::Cron
+                $_[HEAP]{sched}->delete;
+                $_[HEAP]{sched} = undef;
+                delete $_[HEAP]{sched};
+            }
+            _stop => sub {
+                print "_stop\n";
             },
         },
     );
 
-    # crontab DateTime set the hard way
-    $sched1 = POE::Component::Schedule->add(
-        $s1 => Tick => DateTime::Set->from_recurrence(
-            after      => DateTime->now,
-            recurrence => sub {
-                return $_[0]->truncate( to => 'second' )->add( seconds => 2 )
-            },
-        ),
-    );
-
-    # delete some schedule of events
-    $sched1->delete();
-
 =head1 DESCRIPTION
 
 This component encapsulates a session that sends events to client sessions
-on a schedule as defined by a DateTime::Set iterator. The implementation is
-straight forward if a little limited.
+on a schedule as defined by a DateTime::Set iterator.
 
 =head1 POE::Component::Schedule METHODS
 
@@ -189,19 +193,25 @@ No need to call this in normal use, add() and new() all crank
 one of these up if it is needed. Start up a PoCo::Schedule. Returns a
 handle that can then be added to.
 
-=head2 add
+=head2 add()
 
-Add a set of events to the schedule. the session and event name are passed
-to POE without even checking to see if they are valid and so have the same
-warnings as ->post() itself.
-Returns a schedule handle that can be used to remove the event.
-
-    $schedule->add(
-        $session,
+    my $sched = POE::Component::Schedule->add(
+        $session_object,
         $event_name,
         $DateTime_Set_iterator,
         @event_args
     );
+
+Add a set of events to the schedule. The C<$session_object> and C<$event_name> are passed
+to POE without even checking to see if they are valid and so have the same
+warnings as ->post() itself.
+C<$session_object> must be a real L<POE::Session>, not a session ID. Else session
+reference count will not be increased and the session may end before receiving all
+events.
+
+Returns a schedule handle. The event is removed from when the handle is not referenced
+anymore.
+
 
 =head2 new
 
@@ -211,7 +221,11 @@ new is an alias for add
 
 =head2 delete
 
-Removes a schedule using the handle returned from ->add or ->new
+Removes a schedule using the handle returned from ->add or ->new.
+
+B<DEPRECATED>: Schedules are now automatically deleted when they are not
+referenced anymore. So just setting the container variable to C<undef> will
+delete the schedule.
 
 =head1 SEE ALSO
 
@@ -252,15 +266,25 @@ The orignal author of POE::Component::Cron is Chris Fedde.
 
 See L<https://rt.cpan.org/Ticket/Display.html?id=44442>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Olivier MenguE<eacute>, C<<< dolmen@cpan.org >>>
-Chris Fedde, C<<< cfedde@cpan.org >>>
+=over 4
+
+=item Olivier MenguE<eacute>, C<<< dolmen@cpan.org >>>
+
+=item Chris Fedde, C<<< cfedde@cpan.org >>>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright E<copy> 2007-2008 Chris Fedde
-Copyright E<copy> 2009 Olivier MenguE<eacute>
+=over 4
+
+=item Copyright E<copy> 2007-2008 Chris Fedde
+
+=item Copyright E<copy> 2009 Olivier MenguE<eacute>
+
+=back
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.3 or,
