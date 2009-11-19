@@ -18,18 +18,15 @@ my $builder = Module::Build->new(
         },
     },
     requires            => {
-        'POE' => '>=1.000',
+        'POE' => '1.003', # A not too old version
         'DateTime' => 0,
-        'DateTime::Set' => '>=0.25',
-        'DateTime::TimeZone' => ($^O eq 'hpux' ? '>=0.87' : 0),
-        # HP-UX requires a plugin for TZ detection
-        ($^O eq 'hpux' ? ('DateTime::TimeZone::HPUX' => '>=0.03') : () ),
+        'DateTime::Set' => '0.25',
+        'DateTime::TimeZone' => ($^O eq 'hpux' ? '0.87' : 0),
+        # HP-UX requires a plugin for local TZ detection
+        ($^O eq 'hpux' ? ('DateTime::TimeZone::HPUX' => '1.04') : () ),
     },
     build_requires => {
         'Test::More' => 0,
-        #'Test::POE::Stopping' => '0.02',
-        # Author mode
-        #( -d '.svn' ? () : ()),
     },
     add_to_cleanup      => [ 'cover_db' ],
     create_makefile_pl => 'traditional',

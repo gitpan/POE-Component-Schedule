@@ -14,3 +14,11 @@ t/01-pod.t
 t/02-pod-coverage.t
 t/10-basic.t
 t/11-two.t
+t/12-session-ref-1.t
+t/13-session-ref-2.t
+t/14-session-ref-3.t
+t/15-timers.t
+t/90-critic.t
+t/90-meta.t
+t/90-minimumversion.t
+t/90-pod.t

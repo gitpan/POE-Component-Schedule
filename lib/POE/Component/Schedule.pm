@@ -2,16 +2,35 @@ package POE::Component::Schedule;
 
 use 5.008;
 
-our $VERSION = '0.03';
-
 use strict;
 use warnings;
 
+our $VERSION = '0.91_01';
+
 use POE;
 
-my $Singleton;
-my $ID_Sequence = 'a';    # sequence is 'a', 'b', ..., 'z', 'aa', 'ab', ...
-my %Schedule_Ticket;      # Hash helps remember alarm id for cancel.
+
+BEGIN {
+    defined &DEBUG or *DEBUG = sub () { 0 };
+}
+
+# Properties of a schedule ticket
+sub PCS_TIMER     { 0 }  # The POE timer
+sub PCS_ITERATOR  { 1 }  # DateTime::Set iterator
+sub PCS_SESSION   { 2 }  # POE session ID
+sub PCS_EVENT     { 3 }  # Event name
+sub PCS_ARGS      { 4 }  # Event args array
+
+# The name of the counter attached to each session
+# We use only one counter for all timers of one session
+my $refcount_counter_name = __PACKAGE__;
+
+# Scheduling session ID
+my $BackEndSession;
+
+# Maps tickets IDs to tickets
+my %Tickets = ();
+my $LastTicketID = 'a'; # 'b' ... 'z', 'aa' ...
 
 #
 # crank up the schedule session
@@ -20,13 +39,15 @@ sub spawn {
     my $class = shift;
     my %arg   = @_;
 
-    if ( !defined $Singleton ) {
+    if ( !defined $BackEndSession ) {
 
-        $Singleton = POE::Session->create(
+        $BackEndSession = POE::Session->create(
             inline_states => {
                 _start => sub {
+                    print "# $class _start\n" if DEBUG;
                     my ($k) = $_[KERNEL];
 
+                    $k->detach_myself;
                     $k->alias_set( $arg{'Alias'} || $class );
                     $k->sig( 'SHUTDOWN', 'shutdown' );
                 },
@@ -36,56 +57,61 @@ sub spawn {
                 cancel       => \&_cancel,
 
                 shutdown => sub {
-                    #print "# $class shutdown\n";
+                    print "# $class shutdown\n" if DEBUG;
                     my $k = $_[KERNEL];
 
-                    # FIXME We are removing too much here!
-                    $k->alarm_remove_all();
+                    # Remove all timers
+                    # and decrement session references
+                    foreach my $alarm ($k->alarm_remove_all()) {
+                        my ($name, $time, $t) = @$alarm;
+                        $t->[PCS_TIMER] = undef;
+                        $k->refcount_decrement($t->[PCS_SESSION], $refcount_counter_name);
+                    }
+                    %Tickets = ();
 
                     $k->sig_handled();
                 },
                 _stop => sub {
-                    #print "# $class _stop\n";
-                    $Singleton = undef;
+                    print "# $class _stop\n" if DEBUG;
+                    $BackEndSession = undef;
                 },
             },
         )->ID;
     }
+    $BackEndSession
 }
 
 #
 # schedule the next event
-#  ARG0 is a client session,
-#  ARG1 is the client event name,
-#  ARG2 is a DateTime::Set iterator
-#  ARG3 is an schedule ticket
-#  ARG4 .. $#_ are arguments to the client event
+#  ARG0 is the schedule ticket
 #
 sub _schedule {
-    my ( $k, $s, $e, $ds, $tix, @arg ) = @_[ KERNEL, ARG0 .. $#_ ];
-    my $n;
+    my ( $k, $t ) = @_[ KERNEL, ARG0];
 
     #
     # deal with DateTime::Sets that are finite
     #
-    return 1 unless ( $n = $ds->next );
+    my $n = $t->[PCS_ITERATOR]->next;
+    unless ($n) {
+        # No more events, so release the session
+        $k->refcount_decrement($t->[PCS_SESSION], $refcount_counter_name);
+        $t->[PCS_TIMER] = undef;
+        return;
+    }
 
-    $Schedule_Ticket{$tix} =
-      $k->alarm_set( 'client_event', $n->epoch, $s, $e, $ds, $tix, @arg );
+    $t->[PCS_TIMER] = $k->alarm_set( client_event => $n->epoch, $t );
+    $t;
 }
 
 #
 # handle a client event and schedule the next one
-#  ARG0 is a client session,
-#  ARG1 is the client event name,
-#  ARG2 is a DateTime::Set iterator
-#  ARG3 is an schedule ticket
-#  ARG4 .. $#_ are arguments to the client event
+#  ARG0 is the schedule ticket
 #
 sub _client_event {
-    my ( $k, $s, $e, $ds, $tix, @arg ) = @_[ KERNEL, ARG0 .. $#_ ];
+    my ( $k, $t ) = @_[ KERNEL, ARG0 ];
 
-    $k->post( $s, $e, @arg );
+    $k->post( @{$t}[PCS_SESSION, PCS_EVENT], @{$t->[PCS_ARGS]} );
+
     _schedule(@_);
 }
 
@@ -93,45 +119,61 @@ sub _client_event {
 # cancel an alarm
 #
 sub _cancel {
-    my ( $k, $id ) = @_[ KERNEL, ARG0 ];
+    my ( $k, $t ) = @_[ KERNEL, ARG0 ];
 
-    $k->alarm_remove($id);
+    if (defined($t->[PCS_TIMER])) {
+        $k->alarm_remove($t->[PCS_TIMER]);
+        $k->refcount_decrement($t->[PCS_SESSION], $refcount_counter_name);
+        $t->[PCS_TIMER] = undef;
+    }
+    undef;
 }
 
 #
-# takes a POE::Session, an event name and a DateTime::Set
+# Takes a POE::Session, an event name and a DateTime::Set
+# Returns a ticket object
 #
 sub add {
 
     my $class  = shift;
-    my $ticket = $ID_Sequence++;    # get the next ticket;
-
     my ( $session, $event, $iterator, @args ) = @_;
+
+    # Remember only the session ID
+    $session = ref $session ? $session->ID : $session;
+
     $iterator->isa('DateTime::Set')
       or die __PACKAGE__ . "->add: third arg must be a DateTime::Set";
 
-    $class->spawn unless $Singleton;
+    $class->spawn unless $BackEndSession;
 
-    $poe_kernel->post( $poe_kernel->ID_id_to_session($Singleton),
-        'schedule', $session, $event, $iterator, $ticket, @args, );
-    $Schedule_Ticket{$ticket} = ();
+    my $id = $LastTicketID++;
+    my $ticket = $Tickets{$id} = [
+        undef, # Current alarm id
+        $iterator,
+        $session,
+        $event,
+        \@args,
+    ];
 
-    return bless \$ticket, ref $class || $class;
+    # We don't want to loose the session until the event has been handled
+    $poe_kernel->refcount_increment($session, $refcount_counter_name);
+
+    $poe_kernel->post( $BackEndSession, schedule => $ticket);
+
+    # We return a kind of smart pointer, so the schedule
+    # can be simply destroyed by releasing its object reference
+    return bless \$id, $class;
 }
 
 sub delete {
-    my $self   = shift;
-    my $ticket = $$self;
-
-    $poe_kernel->post(
-        $poe_kernel->ID_id_to_session($Singleton),
-        'cancel', $Schedule_Ticket{$ticket},
-    );
-    delete $Schedule_Ticket{$ticket};
+    my $id = ${$_[0]};
+    return unless exists $Tickets{$id};
+    $poe_kernel->post($BackEndSession, cancel => delete $Tickets{$id});
 }
 
+# Releasing the ticket object will delete the ressource
 sub DESTROY {
-    $_[0]->delete if exists $Schedule_Ticket{${$_[0]}};
+    $_[0]->delete;
 }
 
 {
@@ -151,13 +193,13 @@ POE::Component::Schedule - Schedule POE events using DateTime::Set iterators
     use POE qw(Component::Schedule);
     use DateTime::Set;
 
-    $s1 = POE::Session->create(
+    POE::Session->create(
         inline_states => {
             _start => sub {
                 $_[HEAP]{sched} = POE::Component::Schedule->add(
                     $_[SESSION], Tick => DateTime::Set->from_recurrence(
                         after      => DateTime->now,
-                        before     => DateTime->now->add(seconds => 3)
+                        before     => DateTime->now->add(seconds => 3),
                         recurrence => sub {
                             return $_[0]->truncate( to => 'second' )->add( seconds => 1 )
                         },
@@ -173,12 +215,14 @@ POE::Component::Schedule - Schedule POE events using DateTime::Set iterators
                 $_[HEAP]{sched}->delete;
                 $_[HEAP]{sched} = undef;
                 delete $_[HEAP]{sched};
-            }
+            },
             _stop => sub {
                 print "_stop\n";
             },
         },
     );
+
+    POE::Kernel->run();
 
 =head1 DESCRIPTION
 

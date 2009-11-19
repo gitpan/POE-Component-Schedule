@@ -1,10 +1,22 @@
 Revision history for POE-Component-Schedule
 
+0.91_01 2009-11-19T20:55 +0100    DOLMEN (Olivier Mengué)
+        Major internal rewrite. No external changes. I love TDD!
+        Now the scheduling session is detached from the session from
+          which the session was spawned. This should help to avoid session
+          attachment/references problems as the scheduler is not anymore
+          attached to a particular session. Note that due to a POE bug,
+          _child(lose) is still fired.
+        Fixed typos in example code. kthakore++
+        TODO: add a test that extracts test code from the
+              SYNOPSIS POD section and runs it. Maybe using
+              Test::Pod::Snippets.
+
 0.03    2009-06-16T19:10 +0200    DOLMEN (Olivier Mengué)
         Major improvement of POD. Fixed sample code.
         Improved test suite to check session reference counting.
         Added DESTROY handler for schedule handles to automatically
-        delete handles which are not anymore referenced.
+          delete handles which are not anymore referenced.
         Deprecated ->delete().
 
 0.02    2009-06-15T23:09 +0200    DOLMEN (Olivier Mengué)

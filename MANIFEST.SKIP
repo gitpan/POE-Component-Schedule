@@ -11,4 +11,5 @@
 \.old\.pl$
 \.tmp$
 \B\.svn\b
-^POE-Component-Schedule-
+^POE-Component-Schedule-*
+^a.out$
