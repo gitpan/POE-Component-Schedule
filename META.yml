@@ -1,14 +1,10 @@
 ---
 name: POE-Component-Schedule
-version: 0.91_01
+version: 0.92
 author:
-  - 'Olivier Mengué <dolmen@cpan.org>'
+  - 'Olivier MenguÃ© <dolmen@cpan.org>'
 abstract: Schedule POE events using DateTime::Set iterators
 license: perl
-resources:
-  bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Schedule
-  homepage: http://code.google.com/p/poe-component-schedule/
-  repository: http://poe-component-schedule.googlecode.com/svn/trunk/
 build_requires:
   Test::More: 0
 requires:
@@ -17,12 +13,16 @@ requires:
   DateTime::TimeZone: 0
   POE: 1.003
 configure_requires:
-  Module::Build: 0.35
-provides:
-  POE::Component::Schedule:
-    file: lib/POE/Component/Schedule.pm
-    version: 0.91_01
-generated_by: Module::Build version 0.35
+  Module::Build: 0.340201
+generated_by: Module::Build version 0.340201
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
+resources:
+  bugtracker: "http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Schedule"
+  homepage: http://code.google.com/p/poe-component-schedule/
+  repository: http://poe-component-schedule.googlecode.com/svn/trunk/
+provides:
+  POE::Component::Schedule:
+    file: lib/POE/Component/Schedule.pm
+    version: 0.92

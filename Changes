@@ -1,5 +1,9 @@
 Revision history for POE-Component-Schedule
 
+0.92    2009-11-20T19:17 +0100    DOLMEN (Olivier Mengué)
+        Official Release. Have to review doc before 1.00.
+        Fixed my local YAML.pm to have correct encoding of META.yml.
+
 0.91_01 2009-11-19T20:55 +0100    DOLMEN (Olivier Mengué)
         Major internal rewrite. No external changes. I love TDD!
         Now the scheduling session is detached from the session from
