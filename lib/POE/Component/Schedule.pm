@@ -4,8 +4,9 @@ use 5.008;
 
 use strict;
 use warnings;
+use Carp;
 
-our $VERSION = '0.93_01';
+our $VERSION = '0.93_02';
 
 use POE;
 
@@ -26,6 +27,7 @@ sub PCS_ARGS      { 4 }  # Event args array
 my $refcount_counter_name = __PACKAGE__;
 
 # Scheduling session ID
+# This session is a singleton
 my $BackEndSession;
 
 # Maps tickets IDs to tickets
@@ -37,18 +39,19 @@ my $LastTicketID = 'a'; # 'b' ... 'z', 'aa' ...
 #
 sub spawn {
     my $class = shift;
-    my %arg   = @_;
 
     if ( !defined $BackEndSession ) {
+	my %arg   = @_;
+	my $alias = $arg{Alias} || ref $class || $class;
 
         $BackEndSession = POE::Session->create(
             inline_states => {
                 _start => sub {
-                    print "# $class _start\n" if DEBUG;
+                    print "# $alias _start\n" if DEBUG;
                     my ($k) = $_[KERNEL];
 
                     $k->detach_myself;
-                    $k->alias_set( $arg{'Alias'} || $class );
+                    $k->alias_set( $alias );
                     $k->sig( 'SHUTDOWN', 'shutdown' );
                 },
 
@@ -57,7 +60,7 @@ sub spawn {
                 cancel       => \&_cancel,
 
                 shutdown => sub {
-                    print "# $class shutdown\n" if DEBUG;
+                    print "# $alias shutdown\n" if DEBUG;
                     my $k = $_[KERNEL];
 
                     # Remove all timers
@@ -72,7 +75,7 @@ sub spawn {
                     $k->sig_handled();
                 },
                 _stop => sub {
-                    print "# $class _stop\n" if DEBUG;
+                    print "# $alias _stop\n" if DEBUG;
                     $BackEndSession = undef;
                 },
             },
@@ -141,8 +144,12 @@ sub add {
     # Remember only the session ID
     $session = ref $session ? $session->ID : $session;
 
-    $iterator->isa('DateTime::Set')
-      or die __PACKAGE__ . "->add: third arg must be a DateTime::Set";
+    # We don't want to loose the session until the event has been handled
+    $poe_kernel->refcount_increment($session, $refcount_counter_name)
+      or croak __PACKAGE__ . "->add: first arg must be a POE session ID: $!";
+
+    ref $iterator && $iterator->isa('DateTime::Set')
+      or croak __PACKAGE__ . "->add: third arg must be a DateTime::Set";
 
     $class->spawn unless $BackEndSession;
 
@@ -154,9 +161,6 @@ sub add {
         $event,
         \@args,
     ];
-
-    # We don't want to loose the session until the event has been handled
-    $poe_kernel->refcount_increment($session, $refcount_counter_name);
 
     $poe_kernel->post( $BackEndSession, schedule => $ticket);
 
@@ -233,39 +237,35 @@ on a schedule as defined by a DateTime::Set iterator.
 
 =head2 spawn(Alias => I<name>)
 
-No need to call this in normal use, add() and new() all crank
-one of these up if it is needed. Start up a PoCo::Schedule. Returns a
-handle that can then be added to.
+Start up the PoCo::Schedule background session with the given alias. Returns
+the back-end session handle.
 
-=head2 add()
+No need to call this in normal use, C<add()> and C<new()> all crank
+one of these up if it is needed.
+
+=head2 add(I<$session>, I<$event_name>, I<$iterator>, I<@event_args>)
 
     my $sched = POE::Component::Schedule->add(
-        $session_object,
+        $session,
         $event_name,
         $DateTime_Set_iterator,
         @event_args
     );
 
-Add a set of events to the schedule. The C<$session_object> and C<$event_name> are passed
-to POE without even checking to see if they are valid and so have the same
-warnings as ->post() itself.
-C<$session_object> must be a real L<POE::Session>, not a session ID. Else session
-reference count will not be increased and the session may end before receiving all
-events.
+Add a set of events to the scheduler.
 
-Returns a schedule handle. The event is removed from when the handle is not referenced
-anymore.
+Returns a schedule handle. The event is automatically deleted when the handle
+is not referenced anymore.
 
+=head2 new(I<$session>, I<$event_name>, I<$iterator>, I<@event_args>)
 
-=head2 new
-
-new is an alias for add
+C<new()> is an alias for C<add()>.
 
 =head1 SCHEDULE HANDLE METHODS
 
-=head2 delete
+=head2 delete()
 
-Removes a schedule using the handle returned from ->add or ->new.
+Removes a schedule using the handle returned from C<->add()> or C<->new()>.
 
 B<DEPRECATED>: Schedules are now automatically deleted when they are not
 referenced anymore. So just setting the container variable to C<undef> will
@@ -300,15 +300,20 @@ L<http://search.cpan.org/dist/POE-Component-Schedule/>
 =back
 
 
-=head1 ACKNOWLEDGMENT
+=head1 ACKNOWLEDGMENT & HISTORY
 
-This module is a friendly fork of POE::Component::Cron to extract the generic
+This module was a friendly fork of L<POE::Component::Cron> to extract the generic
 parts and isolate the Cron specific code in order to reduce dependencies on
 other CPAN modules.
 
+See L<https://rt.cpan.org/Ticket/Display.html?id=44442>
+
 The orignal author of POE::Component::Cron is Chris Fedde.
 
-See L<https://rt.cpan.org/Ticket/Display.html?id=44442>
+Most of the POE::Component::Schedule internals have since been rewritten in 0.91_01
+and we have now a complete test suite.
+
+POE::Component::Cron is now implemented as a class that inherits from POE::Component::Schedule.
 
 =head1 AUTHORS
 
@@ -324,9 +329,9 @@ See L<https://rt.cpan.org/Ticket/Display.html?id=44442>
 
 =over 4
 
-=item Copyright E<copy> 2007-2008 Chris Fedde
+=item Copyright E<copy> 2009-2010 Olivier MenguE<eacute>
 
-=item Copyright E<copy> 2009 Olivier MenguE<eacute>
+=item Copyright E<copy> 2007-2008 Chris Fedde
 
 =back
 

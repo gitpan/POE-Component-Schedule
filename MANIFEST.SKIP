@@ -14,3 +14,4 @@
 ^POE-Component-Schedule-*
 ^a.out$
 ^MYMETA.yml$
+^make-svn-tag.pl$
