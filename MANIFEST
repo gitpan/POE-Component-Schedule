@@ -1,13 +1,12 @@
 .includepath
 .project
 .settings/org.eclipse.core.resources.prefs
+bless.patch
 Build.PL
 Changes
 lib/POE/Component/Schedule.pm
-Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
-META.yml
 README
 t/00-load.t
 t/01-pod.t
@@ -18,7 +17,10 @@ t/12-session-ref-1.t
 t/13-session-ref-2.t
 t/14-session-ref-3.t
 t/15-timers.t
+t/50-subclass.t
 t/90-critic.t
 t/90-meta.t
 t/90-minimumversion.t
 t/90-pod.t
+Makefile.PL
+META.yml

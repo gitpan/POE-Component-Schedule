@@ -1,0 +1,12 @@
+diff -Naur POE-Component-Schedule-0.92/lib/POE/Component/Schedule.pm POE-Component-Schedule-0.92-zephg/lib/POE/Component/Schedule.pm
+--- POE-Component-Schedule-0.92/lib/POE/Component/Schedule.pm	2009-11-20 11:03:55.000000000 -0700
++++ POE-Component-Schedule-0.92-zephg/lib/POE/Component/Schedule.pm	2010-01-22 16:08:00.000000000 -0700
+@@ -162,7 +162,7 @@
+ 
+     # We return a kind of smart pointer, so the schedule
+     # can be simply destroyed by releasing its object reference
+-    return bless \$id, $class;
++    return bless \$id, ref($class) || $class;
+ }
+ 
+ sub delete {

@@ -1,5 +1,13 @@
 Revision history for POE-Component-Schedule
 
+0.93_01 2010-02-13
+        Applied fix for RT#53925 (Patch by Zeph Gillen).
+        Added t/50-subclass.t to try to catch subclassing problems which may
+          affect POE::Component::Cron. Unfortunatelly it does not catch
+          #53925. Help needed.
+        Added strictures in tests.
+        Updated MANIFEST.SKIP to match new Module::Build: ignore MYMETA.yml.
+
 0.92    2009-11-20T19:17 +0100    DOLMEN (Olivier Mengué)
         Official Release. Have to review doc before 1.00.
         Fixed my local YAML.pm to have correct encoding of META.yml.

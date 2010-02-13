@@ -5,7 +5,7 @@ use 5.008;
 use strict;
 use warnings;
 
-our $VERSION = '0.92';
+our $VERSION = '0.93_01';
 
 use POE;
 
@@ -162,7 +162,7 @@ sub add {
 
     # We return a kind of smart pointer, so the schedule
     # can be simply destroyed by releasing its object reference
-    return bless \$id, $class;
+    return bless \$id, ref($class) || $class;
 }
 
 sub delete {

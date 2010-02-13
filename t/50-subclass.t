@@ -1,10 +1,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
 
+{
+    package POE::Component::Schedule::MySubClass;
+    #use POE::Component::Schedule;
+    use base 'POE::Component::Schedule';
+    1;
+}
+
+use Test::More tests => 14;
 use POE;
-use POE::Component::Schedule;
 use DateTime;
 use DateTime::Set;
 
@@ -16,7 +22,7 @@ POE::Session->create(
         _start => sub {
             pass "_start";
             $_[HEAP]{count} = $max;
-            $_[HEAP]{sched} = POE::Component::Schedule->add(
+            $_[HEAP]{sched} = POE::Component::Schedule::MySubClass->add(
                 $_[SESSION] => Tick => DateTime::Set->from_recurrence(
                         after      => DateTime->now->add( seconds => 1),
                         recurrence => sub {
@@ -25,6 +31,7 @@ POE::Session->create(
                     ),
                 'my_ticket', 1, 2,
             );
+	    isa_ok($_[HEAP]{sched}, 'POE::Component::Schedule::MySubClass');
         },
         Tick => sub {
             pass "Tick " . --$_[HEAP]{count};

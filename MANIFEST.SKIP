@@ -13,3 +13,4 @@
 \B\.svn\b
 ^POE-Component-Schedule-*
 ^a.out$
+^MYMETA.yml$
