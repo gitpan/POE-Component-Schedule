@@ -9,4 +9,4 @@ BEGIN {
     use_ok( 'POE::Component::Schedule' );
 }
 
-diag( "Testing POE::Component::Schedule ".POE::Component::Schedule->VERSION.", Perl $], $^X" );
+diag( "Testing POE::Component::Schedule ".POE::Component::Schedule->VERSION.", POE ".POE->VERSION.", Perl $], $^X" );

@@ -9,10 +9,10 @@ WriteMakefile
           'VERSION_FROM' => 'lib/POE/Component/Schedule.pm',
           'PREREQ_PM' => {
                            'Test::More' => 0,
-                           'DateTime::TimeZone' => 0,
-                           'DateTime' => 0,
+                           'DateTime::TimeZone' => '1.13',
+                           'DateTime' => '0.48',
                            'DateTime::Set' => '0.25',
-                           'POE' => '1.003'
+                           'POE' => '1.287'
                          }
         )
 ;

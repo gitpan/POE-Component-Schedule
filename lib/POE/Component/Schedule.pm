@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.93_02';
+our $VERSION = '0.94';
 
 use POE;
 
@@ -265,7 +265,7 @@ C<new()> is an alias for C<add()>.
 
 =head2 delete()
 
-Removes a schedule using the handle returned from C<->add()> or C<->new()>.
+Removes a schedule using the handle returned from C<add()> or C<new()>.
 
 B<DEPRECATED>: Schedules are now automatically deleted when they are not
 referenced anymore. So just setting the container variable to C<undef> will
@@ -275,7 +275,7 @@ delete the schedule.
 
 L<POE>, L<DateTime::Set>, L<POE::Component::Cron>.
 
-=head1 BUGS
+=head1 SUPPORT
 
 You can look for information at:
 
@@ -283,37 +283,41 @@ You can look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Schedule>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/POE-Component-Schedule>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Schedule>:
+post bug report there.
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/p/POE-Component-Schedule>
+L<http://cpanratings.perl.org/p/POE-Component-Schedule>:
+if you use this distibution, please add comments on your experience for other
+users.
 
 =item * Search CPAN
 
 L<http://search.cpan.org/dist/POE-Component-Schedule/>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/POE-Component-Schedule>
 
 =back
 
 
 =head1 ACKNOWLEDGMENT & HISTORY
 
-This module was a friendly fork of L<POE::Component::Cron> to extract the generic
-parts and isolate the Cron specific code in order to reduce dependencies on
-other CPAN modules.
+This module was a friendly fork of L<POE::Component::Cron> to extract the
+generic parts and isolate the Cron specific code in order to reduce
+dependencies on other CPAN modules.
 
-See L<https://rt.cpan.org/Ticket/Display.html?id=44442>
+See L<https://rt.cpan.org/Ticket/Display.html?id=44442>.
 
 The orignal author of POE::Component::Cron is Chris Fedde.
 
-Most of the POE::Component::Schedule internals have since been rewritten in 0.91_01
-and we have now a complete test suite.
+POE::Component::Cron is now implemented as a class that inherits from
+POE::Component::Schedule.
 
-POE::Component::Cron is now implemented as a class that inherits from POE::Component::Schedule.
+Most of the POE::Component::Schedule internals have since been rewritten in
+0.91_01 and we have now a complete test suite.
 
 =head1 AUTHORS
 
@@ -329,9 +333,9 @@ POE::Component::Cron is now implemented as a class that inherits from POE::Compo
 
 =over 4
 
-=item Copyright E<copy> 2009-2010 Olivier MenguE<eacute>
+=item Copyright E<copy> 2009-2010 Olivier MenguE<eacute>.
 
-=item Copyright E<copy> 2007-2008 Chris Fedde
+=item Copyright E<copy> 2007-2008 Chris Fedde.
 
 =back
 

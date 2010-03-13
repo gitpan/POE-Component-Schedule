@@ -8,8 +8,8 @@ BEGIN {
 }
 
 my @MODULES = (
-	'Perl::Critic 1.098',
-	'Test::Perl::Critic 1.01',
+	'Perl::Critic 1.105',
+	'Test::Perl::Critic 1.02',
 );
 
 # Don't run tests during end-user installs
@@ -28,6 +28,7 @@ foreach my $MODULE ( @MODULES ) {
 	}
 }
 
+print "# Perl::Critic ".eval('$Perl::Critic::VERSION')."\n";
 all_critic_ok();
 
 1;

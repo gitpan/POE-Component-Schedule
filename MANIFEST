@@ -3,7 +3,11 @@
 .settings/org.eclipse.core.resources.prefs
 Build.PL
 Changes
+Changes.rss
+Changes.yml
 lib/POE/Component/Schedule.pm
+make-Changes-rss-2.pl
+make-Changes-rss.pl
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP

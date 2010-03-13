@@ -1,0 +1,88 @@
+---
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - Only minor POD changes in Schedule.pm since 0.93_02.
+    - Increased dependencies versions.
+    - Small tweak to the 'Changes' file format to make it more parseable and generate 'Changes.yml' and 'Changes.rss'.
+    - "Added 'Changes.rss' and 'Changes.yml', generated from 'Changes' using either 'make-Changes-rss.pl' or 'make-Changes-rss-2.pl' (see SVN repo)."
+    - 'Test coverage: 92.1%.'
+  date: 2010-03-13
+  time: 16:37
+  tz: +01:00
+  version: 0.94
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - 'More test coverage, but still only 92.1%. Help still welcome for RT#53925.'
+    - 'Improved argument check for ->add() (and now, with tests too).'
+    - POE >= 1.281 is recommended as it fixes the _child(lose) issue.
+    - 'Updated POD: removed obsolete warnings, updated copyright.'
+    - 'Updated README: should be more helpful for distribution packagers.'
+  date: 2010-02-13
+  time: 16:30
+  tz: +01:00
+  version: 0.93_02
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - Applied fix for RT#53925 (Patch by Zeph Gillen).
+    - Added t/50-subclass.t to try to catch subclassing problems which may affect POE::Component::Cron. Unfortunately it does not catch RT#53925. Help needed.
+    - Added strictures in tests.
+    - 'Updated MANIFEST.SKIP to match new Module::Build: ignore MYMETA.yml.'
+  date: 2010-02-13
+  time: 01:55
+  tz: +01:00
+  version: 0.93_01
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - Official Release. Have to review doc before 1.00.
+    - Fixed my local YAML.pm to have correct encoding of META.yml.
+  date: 2009-11-20
+  time: 19:17
+  tz: +01:00
+  version: 0.92
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - Major internal rewrite. No external changes. I love TDD!
+    - 'Now the scheduling session is detached from the session from which the session was spawned. This should help to avoid session attachment/references problems as the scheduler is not anymore attached to a particular session. Note that due to a POE bug, _child(lose) is still fired.'
+    - Fixed typos in example code. kthakore++
+    - 'TODO: add a test that extracts test code from the SYNOPSIS POD section and runs it. Maybe using Test::Pod::Snippets.'
+  date: 2009-11-19
+  time: 20:55
+  tz: +01:00
+  version: 0.91_01
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - Major improvement of POD. Fixed sample code.
+    - Improved test suite to check session reference counting.
+    - Added DESTROY handler for schedule handles to automatically delete handles which are not anymore referenced.
+    - Deprecated ->delete().
+  date: 2009-06-16
+  time: 19:10
+  tz: +02:00
+  version: 0.03
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - Changed the default session alias to $class.
+    - Fixed warning in Schedule.pm about new() not being used.
+    - Improved test suite to increase code coverage (added 11-two.t).
+    - Improved documentation for spawn().
+    - Thanks to Rob Fugina for discussion.
+  date: 2009-06-15
+  time: 23:09
+  tz: +02:00
+  version: 0.02
+- author_id: DOLMEN
+  author_name: Olivier Mengué
+  changes:
+    - "First release to the world, with Chris Fedde's blessing."
+    - See RT#44442
+  date: 2009-06-05
+  time: 19:56
+  tz: +02:00
+  version: 0.01

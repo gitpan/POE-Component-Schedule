@@ -1,6 +1,16 @@
 Revision history for POE-Component-Schedule
 
-0.93_02 2010-02-13T16:30 +0100    DOLMEN (Olivier Mengué)
+0.94    2010-03-13T16:37+01:00    DOLMEN (Olivier Mengué)
+        Only minor POD changes in Schedule.pm since 0.93_02.
+        Increased dependencies versions.
+        Small tweak to the 'Changes' file format to make it more parseable
+          and generate 'Changes.yml' and 'Changes.rss'.
+	Added 'Changes.rss' and 'Changes.yml', generated from 'Changes'
+          using either 'make-Changes-rss.pl' or 'make-Changes-rss-2.pl' (see
+          SVN repo).
+        Test coverage: 92.1%.
+
+0.93_02 2010-02-13T16:30+01:00    DOLMEN (Olivier Mengué)
         More test coverage, but still only 92.1%. Help still welcome for
           RT#53925.
         Improved argument check for ->add() (and now, with tests too).
@@ -8,7 +18,7 @@ Revision history for POE-Component-Schedule
 	Updated POD: removed obsolete warnings, updated copyright.
 	Updated README: should be more helpful for distribution packagers.
 
-0.93_01 2010-02-13T01:55 +0100    DOLMEN (Olivier Mengué)
+0.93_01 2010-02-13T01:55+01:00    DOLMEN (Olivier Mengué)
         Applied fix for RT#53925 (Patch by Zeph Gillen).
         Added t/50-subclass.t to try to catch subclassing problems which may
           affect POE::Component::Cron. Unfortunately it does not catch
@@ -16,11 +26,11 @@ Revision history for POE-Component-Schedule
         Added strictures in tests.
         Updated MANIFEST.SKIP to match new Module::Build: ignore MYMETA.yml.
 
-0.92    2009-11-20T19:17 +0100    DOLMEN (Olivier Mengué)
+0.92    2009-11-20T19:17+01:00    DOLMEN (Olivier Mengué)
         Official Release. Have to review doc before 1.00.
         Fixed my local YAML.pm to have correct encoding of META.yml.
 
-0.91_01 2009-11-19T20:55 +0100    DOLMEN (Olivier Mengué)
+0.91_01 2009-11-19T20:55+01:00    DOLMEN (Olivier Mengué)
         Major internal rewrite. No external changes. I love TDD!
         Now the scheduling session is detached from the session from
           which the session was spawned. This should help to avoid session
@@ -32,20 +42,20 @@ Revision history for POE-Component-Schedule
               SYNOPSIS POD section and runs it. Maybe using
               Test::Pod::Snippets.
 
-0.03    2009-06-16T19:10 +0200    DOLMEN (Olivier Mengué)
+0.03    2009-06-16T19:10+02:00    DOLMEN (Olivier Mengué)
         Major improvement of POD. Fixed sample code.
         Improved test suite to check session reference counting.
         Added DESTROY handler for schedule handles to automatically
           delete handles which are not anymore referenced.
         Deprecated ->delete().
 
-0.02    2009-06-15T23:09 +0200    DOLMEN (Olivier Mengué)
+0.02    2009-06-15T23:09+02:00    DOLMEN (Olivier Mengué)
         Changed the default session alias to $class.
         Fixed warning in Schedule.pm about new() not being used.
         Improved test suite to increase code coverage (added 11-two.t).
         Improved documentation for spawn().
         Thanks to Rob Fugina for discussion.
 
-0.01    2009-06-05T19:56 +0200    DOLMEN (Olivier Mengué)
+0.01    2009-06-05T19:56+02:00    DOLMEN (Olivier Mengué)
         First release to the world, with Chris Fedde's blessing.
         See RT#44442
