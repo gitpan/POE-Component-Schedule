@@ -124,13 +124,25 @@ $rss->channel(
     ],
 );
 
+
+
+
+sub changes_html
+{
+    my $h = "<ul>\n".join('', map {"<li>$_</li>\n"} @_).'</ul>';
+    $h =~ s{(RT#(\d+))}{<a href="https://rt.cpan.org/Public/Bug/Display.html?id=$2" title="Bug $1">$1</a>}g;
+    $h
+}
+
+
+
 for my $r (@{$Changes{'Releases'}}) {
     my $link = 'http://search.cpan.org/~'.lc($r->{Author_Id})."/$dist-$r->{Version}/";
     $rss->add_item(
 	title => "$dist $r->{Version}",
 	about => $link,
 	link => $link,
-	description => "<ul>\n".join('', map {"<li>$_</li>\n"} @{$r->{Changes}}).'</ul>',
+	description => changes_html(@{$r->{Changes}}),
 	dc => {
 	    creator => "$r->{Author_Name} <".lc($r->{Author_Id}).'@cpan.org>',
 	    date => "$r->{DateTime}",

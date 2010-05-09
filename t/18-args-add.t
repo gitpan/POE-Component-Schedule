@@ -13,7 +13,7 @@ eval {
     is($s, undef, "no ticket created");
 };
 
-like($@, qr/^POE::Component::Schedule->add: first arg must be a POE session ID: /, "arg0 check");
+like($@, qr/^POE::Component::Schedule->add: first arg must be an existing POE session ID or alias/, "arg0 check");
 is($s, undef, "no ticket created");
 
 

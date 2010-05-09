@@ -2,17 +2,17 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'POE::Component::Schedule',
-          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/POE/Component/Schedule.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0,
-                           'DateTime::TimeZone' => '1.13',
                            'DateTime' => '0.48',
                            'DateTime::Set' => '0.25',
-                           'POE' => '1.287'
-                         }
+                           'DateTime::TimeZone' => '1.13',
+                           'POE' => '1.287',
+                           'Test::More' => 0
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;

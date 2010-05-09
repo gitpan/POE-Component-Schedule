@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.94';
+our $VERSION = '0.94_01';
 
 use POE;
 
@@ -63,7 +63,7 @@ sub spawn {
                     print "# $alias shutdown\n" if DEBUG;
                     my $k = $_[KERNEL];
 
-                    # Remove all timers
+                    # Remove all timers of our session
                     # and decrement session references
                     foreach my $alarm ($k->alarm_remove_all()) {
                         my ($name, $time, $t) = @$alarm;
@@ -142,11 +142,13 @@ sub add {
     my ( $session, $event, $iterator, @args ) = @_;
 
     # Remember only the session ID
-    $session = ref $session ? $session->ID : $session;
+    $session = $poe_kernel->alias_resolve($session) unless ref $session;
+    defined($session) or croak __PACKAGE__ . "->add: first arg must be an existing POE session ID or alias.";
+    $session = $session->ID;
 
     # We don't want to loose the session until the event has been handled
-    $poe_kernel->refcount_increment($session, $refcount_counter_name)
-      or croak __PACKAGE__ . "->add: first arg must be a POE session ID: $!";
+    $poe_kernel->refcount_increment($session, $refcount_counter_name) > 0
+      or croak __PACKAGE__ . "->add: first arg must be an existing POE session ID or alias: $!";
 
     ref $iterator && $iterator->isa('DateTime::Set')
       or croak __PACKAGE__ . "->add: third arg must be a DateTime::Set";
