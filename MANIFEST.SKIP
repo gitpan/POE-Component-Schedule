@@ -17,5 +17,8 @@
 ^a.out$
 ^MYMETA.yml$
 ^make-svn-tag.pl$
+^make-Changes-rss.pl$
+^make-Changes-rss-2.pl$
 \b90-kwalitee.t$
+\b90-critic.t$
 Debian_CPANTS.txt$

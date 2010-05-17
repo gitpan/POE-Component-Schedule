@@ -1,18 +1,27 @@
 Revision history for POE-Component-Schedule
 
+0.94_02 2010-05-18T01:02+02:00    DOLMEN (Olivier Mengué)
+        Changes.{rss,yml} generation is now automated in the build process
+          by extending Module::Build (see 'inc/MY/Build.pm' and
+          'inc/MY/Build/Changes.pm').
+        Added 't/90-critic.t' to 'MANIFEST.SKIP' as it is the main cause of
+          CPAN Testers failures.
+        Drop 'Makefile.PL' generation by 'Module::Build'.
+        Transformed 'make-svn-tag.pl' into a Build target (tag).
+
 0.94_01 2010-05-09T19:44+02:00    DOLMEN (Olivier Mengué)
-        RT#56447 fixed, but I expect to unapply the fix once RT#53714
+        RT#56447 fixed, but I expect to unapply the fix once RT#57314
           (allow aliases in $poe_kernel->refcount_{in,de}crement) is
           implemented. Test cases added.
-	Bug references are now linked in Changes.rss.
+        Bug references are now linked in 'Changes.rss'.
         Test coverage: 91.6%.
 
 0.94    2010-03-13T16:37+01:00    DOLMEN (Olivier Mengué)
         Only minor POD changes in Schedule.pm since 0.93_02.
         Increased dependencies versions.
         Small tweak to the 'Changes' file format to make it more parseable
-          and generate 'Changes.yml' and 'Changes.rss'.
-	Added 'Changes.rss' and 'Changes.yml', generated from 'Changes'
+          and be able to generate 'Changes.yml' and 'Changes.rss'.
+        Added 'Changes.rss' and 'Changes.yml', generated from 'Changes'
           using either 'make-Changes-rss.pl' or 'make-Changes-rss-2.pl' (see
           SVN repo).
         Test coverage: 92.1%.
@@ -22,8 +31,8 @@ Revision history for POE-Component-Schedule
           RT#53925.
         Improved argument check for ->add() (and now, with tests too).
         POE >= 1.281 is recommended as it fixes the _child(lose) issue.
-	Updated POD: removed obsolete warnings, updated copyright.
-	Updated README: should be more helpful for distribution packagers.
+        Updated POD: removed obsolete warnings, updated copyright.
+        Updated README: should be more helpful for distribution packagers.
 
 0.93_01 2010-02-13T01:55+01:00    DOLMEN (Olivier Mengué)
         Applied fix for RT#53925 (Patch by Zeph Gillen).
@@ -31,11 +40,11 @@ Revision history for POE-Component-Schedule
           affect POE::Component::Cron. Unfortunately it does not catch
           RT#53925. Help needed.
         Added strictures in tests.
-        Updated MANIFEST.SKIP to match new Module::Build: ignore MYMETA.yml.
+        Updated 'MANIFEST.SKIP' to match new Module::Build: ignore MYMETA.yml.
 
 0.92    2009-11-20T19:17+01:00    DOLMEN (Olivier Mengué)
         Official Release. Have to review doc before 1.00.
-        Fixed my local YAML.pm to have correct encoding of META.yml.
+        Fixed my local YAML.pm to have correct encoding of 'META.yml'.
 
 0.91_01 2009-11-19T20:55+01:00    DOLMEN (Olivier Mengué)
         Major internal rewrite. No external changes. I love TDD!

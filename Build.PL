@@ -6,7 +6,18 @@ use warnings;
 
 use Module::Build;
 
-my $builder = Module::Build->new(
+my $build_module = 'Module::Build';
+
+# Use the extended build only in author environment
+if (-d '.svn' || ! -e 'Changes.rss') {
+	print "Building in author mode for extended distmeta (to build Changes.rss)\n";
+	$build_module = 'inc::MY::Build';
+	require inc::MY::Build;
+}
+
+
+
+my $builder = $build_module->new(
     module_name         => 'POE::Component::Schedule',
     dist_author         => 'Olivier Mengué <dolmen@cpan.org>',
     license             => 'perl',
@@ -32,9 +43,6 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
-    # Changes.rss and Changes.yml are built from Changes
-    add_to_cleanup      => [ qw{ cover_db Changes.rss Changes.yml } ],
-    create_makefile_pl => 'traditional',
 );
 
 $builder->create_build_script();
