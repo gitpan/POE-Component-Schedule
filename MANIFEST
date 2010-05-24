@@ -1,4 +1,5 @@
 .includepath
+.perlcriticrc
 .project
 .settings/org.eclipse.core.resources.prefs
 Build.PL
@@ -8,7 +9,6 @@ Changes.yml
 inc/MY/Build.pm
 inc/MY/Build/Changes.pm
 lib/POE/Component/Schedule.pm
-Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml

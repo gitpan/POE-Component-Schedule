@@ -34,26 +34,36 @@ sub ACTION_tag
     my $version = $self->dist_version;
     my $tag = "release-$version";
 
+    my ($trunk, $repo, $revision);
+
     local %ENV;
     $ENV{LANG} = 'C';
 
     open(my $svn_info, 'svn info|')
 	or die "Can't run 'svn info: $!'";
 
-    my ($repo, $revision);
+    while (<$svn_info>) {
+	chomp;
+	/^URL: (.*)$/ and $trunk = $1;
+    }
+    close $svn_info;
+    die "'URL' not found in 'svn info' output " unless $trunk;
+
+    open($svn_info, "svn info $trunk|")
+	or die "Can't run 'svn info $trunk: $!'";
 
     while (<$svn_info>) {
 	chomp;
 	/^Repository Root: (.*)$/ and $repo = $1;
-	/^Revision: (\d+)/ and $revision = $1;
+	/^Last Changed Rev: (\d+)/ and $revision = $1;
     }
     close $svn_info;
-    die "'Repository Root' or 'Revision' not found in 'svn info' output " unless $repo && $revision;
+    die "'Repository Root' or 'Last Changed Rev' not found in 'svn info' output " unless $repo && $revision;
 
     # TODO Check if the tag already exists
 
     print "Creating tag '$tag' from revision $revision\n";
-    my $cmd = qq|svn copy $repo/trunk $repo/tags/$tag -m "CPAN release $version from r$revision."|;
+    my $cmd = qq|svn copy $trunk $repo/tags/$tag -m "CPAN release $version from r$revision."|;
 
     print "$cmd\n";
     if ($self->y_n("Do it?", 'n')) {
@@ -101,6 +111,15 @@ sub do_create_Changes_RSS
     #system $^X $^X, 'make-Changes-rss-2.pl';
     require inc::MY::Build::Changes;
     inc::MY::Build::Changes->build(dist_name => $self->dist_name);
+
+    # Prepare Changes.rss online distribution in the wiki of the Google Code
+    # project
+    require File::Spec;
+    my $f = File::Spec->catfile('..', $self->dist_name.".wiki", 'Changes.rss');
+    if (-e $f) {
+	require File::Copy;
+	File::Copy::syscopy('Changes.rss', $f);
+    }
 }
 
 

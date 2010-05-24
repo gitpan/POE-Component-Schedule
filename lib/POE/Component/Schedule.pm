@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.94_02';
+our $VERSION = '0.94_03';
 
 use POE;
 
@@ -15,16 +15,18 @@ BEGIN {
     defined &DEBUG or *DEBUG = sub () { 0 };
 }
 
-# Properties of a schedule ticket
-sub PCS_TIMER     { 0 }  # The POE timer
-sub PCS_ITERATOR  { 1 }  # DateTime::Set iterator
-sub PCS_SESSION   { 2 }  # POE session ID
-sub PCS_EVENT     { 3 }  # Event name
-sub PCS_ARGS      { 4 }  # Event args array
+# Private properties of a schedule ticket
+sub PCS_TIMER    () { 0 }  # The POE timer
+sub PCS_ITERATOR () { 1 }  # DateTime::Set iterator
+sub PCS_SESSION  () { 2 }  # POE session ID
+sub PCS_EVENT    () { 3 }  # Event name
+sub PCS_ARGS     () { 4 }  # Event args array
 
+# Private constant:
 # The name of the counter attached to each session
 # We use only one counter for all timers of one session
-my $refcount_counter_name = __PACKAGE__;
+# All instances of P::C::S will use the same counter for a given session
+sub REFCOUNT_COUNTER_NAME () { __PACKAGE__ }
 
 # Scheduling session ID
 # This session is a singleton
@@ -37,11 +39,9 @@ my $LastTicketID = 'a'; # 'b' ... 'z', 'aa' ...
 #
 # crank up the schedule session
 #
-sub spawn {
-    my $class = shift;
-
+sub spawn { ## no critic (Subroutines::RequireArgUnpacking)
     if ( !defined $BackEndSession ) {
-	my %arg   = @_;
+	my ($class, %arg)   = @_;
 	my $alias = $arg{Alias} || ref $class || $class;
 
         $BackEndSession = POE::Session->create(
@@ -68,7 +68,7 @@ sub spawn {
                     foreach my $alarm ($k->alarm_remove_all()) {
                         my ($name, $time, $t) = @$alarm;
                         $t->[PCS_TIMER] = undef;
-                        $k->refcount_decrement($t->[PCS_SESSION], $refcount_counter_name);
+                        $k->refcount_decrement($t->[PCS_SESSION], REFCOUNT_COUNTER_NAME);
                     }
                     %Tickets = ();
 
@@ -81,7 +81,7 @@ sub spawn {
             },
         )->ID;
     }
-    $BackEndSession
+    return $BackEndSession;
 }
 
 #
@@ -97,25 +97,25 @@ sub _schedule {
     my $n = $t->[PCS_ITERATOR]->next;
     unless ($n) {
         # No more events, so release the session
-        $k->refcount_decrement($t->[PCS_SESSION], $refcount_counter_name);
+        $k->refcount_decrement($t->[PCS_SESSION], REFCOUNT_COUNTER_NAME);
         $t->[PCS_TIMER] = undef;
         return;
     }
 
     $t->[PCS_TIMER] = $k->alarm_set( client_event => $n->epoch, $t );
-    $t;
+    return $t;
 }
 
 #
 # handle a client event and schedule the next one
 #  ARG0 is the schedule ticket
 #
-sub _client_event {
+sub _client_event { ## no critic (Subroutines::RequireArgUnpacking)
     my ( $k, $t ) = @_[ KERNEL, ARG0 ];
 
     $k->post( @{$t}[PCS_SESSION, PCS_EVENT], @{$t->[PCS_ARGS]} );
 
-    _schedule(@_);
+    return _schedule(@_);
 }
 
 #
@@ -126,10 +126,10 @@ sub _cancel {
 
     if (defined($t->[PCS_TIMER])) {
         $k->alarm_remove($t->[PCS_TIMER]);
-        $k->refcount_decrement($t->[PCS_SESSION], $refcount_counter_name);
+        $k->refcount_decrement($t->[PCS_SESSION], REFCOUNT_COUNTER_NAME);
         $t->[PCS_TIMER] = undef;
     }
-    undef;
+    return;
 }
 
 #
@@ -138,8 +138,7 @@ sub _cancel {
 #
 sub add {
 
-    my $class  = shift;
-    my ( $session, $event, $iterator, @args ) = @_;
+    my ( $class, $session, $event, $iterator, @args ) = @_;
 
     # Remember only the session ID
     $session = $poe_kernel->alias_resolve($session) unless ref $session;
@@ -147,7 +146,7 @@ sub add {
     $session = $session->ID;
 
     # We don't want to loose the session until the event has been handled
-    $poe_kernel->refcount_increment($session, $refcount_counter_name) > 0
+    $poe_kernel->refcount_increment($session, REFCOUNT_COUNTER_NAME) > 0
       or croak __PACKAGE__ . "->add: first arg must be an existing POE session ID or alias: $!";
 
     ref $iterator && $iterator->isa('DateTime::Set')
@@ -175,11 +174,12 @@ sub delete {
     my $id = ${$_[0]};
     return unless exists $Tickets{$id};
     $poe_kernel->post($BackEndSession, cancel => delete $Tickets{$id});
+    return;
 }
 
 # Releasing the ticket object will delete the ressource
 sub DESTROY {
-    $_[0]->delete;
+    return $_[0]->delete;
 }
 
 {

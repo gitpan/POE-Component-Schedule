@@ -1,9 +1,24 @@
 Revision history for POE-Component-Schedule
 
+0.94_03 2010-05-25T00:14+02:00    DOLMEN (Olivier Mengué)
+        No functional change since 0.94_01.
+        Fixed constant functions: added "()" prototype to make them inlinable
+          by perl. Should have been like that since 0.91_01. That should
+          improve performance.
+        Added .perlcriticrc to disable Perl::Critic policies that do not match
+          our styled (filled RT#57638, RT#57639, RT#640 for issues with
+          default policies).
+        Made some suggestions from Perl::Critic. Reduced number of lines, so
+          improved test coverage ratio.
+        Test coverage: 94.5%.
+        Author build system: fixed the 'Build tag'.
+        Author build system: improved steps to publish 'Changes.rss' in the
+          Google Code wiki area.
+
 0.94_02 2010-05-18T01:02+02:00    DOLMEN (Olivier Mengué)
-        Changes.{rss,yml} generation is now automated in the build process
-          by extending Module::Build (see 'inc/MY/Build.pm' and
-          'inc/MY/Build/Changes.pm').
+        Author build system: Changes.{rss,yml} generation is now automated in
+          the build process by extending Module::Build (see 'inc/MY/Build.pm'
+          and 'inc/MY/Build/Changes.pm').
         Added 't/90-critic.t' to 'MANIFEST.SKIP' as it is the main cause of
           CPAN Testers failures.
         Drop 'Makefile.PL' generation by 'Module::Build'.
