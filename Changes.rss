@@ -15,7 +15,7 @@
 <link>http://search.cpan.org/dist/POE-Component-Schedule/</link>
 <description>Revision history for POE-Component-Schedule</description>
 <dc:language>en-us</dc:language>
-<dc:date>2010-05-25T00:16:54+02:00</dc:date>
+<dc:date>2010-05-25T22:37:07+02:00</dc:date>
 <dc:creator>Olivier Mengu&#xE9; &#x3C;dolmen@cpan.org&#x3E;</dc:creator>
 <syn:updatePeriod>weekly</syn:updatePeriod>
 <taxo:topics>
@@ -25,6 +25,7 @@
 </taxo:topics>
 <items>
  <rdf:Seq>
+  <rdf:li rdf:resource="http://search.cpan.org/~dolmen/POE-Component-Schedule-0.95/" />
   <rdf:li rdf:resource="http://search.cpan.org/~dolmen/POE-Component-Schedule-0.94_03/" />
   <rdf:li rdf:resource="http://search.cpan.org/~dolmen/POE-Component-Schedule-0.94_02/" />
   <rdf:li rdf:resource="http://search.cpan.org/~dolmen/POE-Component-Schedule-0.94_01/" />
@@ -39,13 +40,23 @@
  </rdf:Seq>
 </items>
 </channel>
+<item rdf:about="http://search.cpan.org/~dolmen/POE-Component-Schedule-0.95/">
+<title>POE-Component-Schedule 0.95</title>
+<link>http://search.cpan.org/~dolmen/POE-Component-Schedule-0.95/</link>
+<description>&#x3C;ul&#x3E;
+&#x3C;li&#x3E;No changes since 0.94_03.&#x3C;/li&#x3E;
+&#x3C;li&#x3E;Only change since 0.94 is fix for &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=56447&#x22; title=&#x22;Bug RT#56447&#x22;&#x3E;RT#56447&#x3C;/a&#x3E; (allow POE aliases as target session ID for events).&#x3C;/li&#x3E;
+&#x3C;/ul&#x3E;</description>
+<dc:creator>Olivier Mengu&#xE9; &#x3C;dolmen@cpan.org&#x3E;</dc:creator>
+<dc:date>2010-05-25T22:36+02:00</dc:date>
+</item>
 <item rdf:about="http://search.cpan.org/~dolmen/POE-Component-Schedule-0.94_03/">
 <title>POE-Component-Schedule 0.94_03</title>
 <link>http://search.cpan.org/~dolmen/POE-Component-Schedule-0.94_03/</link>
 <description>&#x3C;ul&#x3E;
 &#x3C;li&#x3E;No functional change since 0.94_01.&#x3C;/li&#x3E;
 &#x3C;li&#x3E;Fixed constant functions: added &#x22;()&#x22; prototype to make them inlinable by perl. Should have been like that since 0.91_01. That should improve performance.&#x3C;/li&#x3E;
-&#x3C;li&#x3E;Added .perlcriticrc to disable Perl::Critic policies that do not match our styled (filled &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=57638&#x22; title=&#x22;Bug RT#57638&#x22;&#x3E;RT#57638&#x3C;/a&#x3E;, &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=57639&#x22; title=&#x22;Bug RT#57639&#x22;&#x3E;RT#57639&#x3C;/a&#x3E;, &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=640&#x22; title=&#x22;Bug RT#640&#x22;&#x3E;RT#640&#x3C;/a&#x3E; for issues with default policies).&#x3C;/li&#x3E;
+&#x3C;li&#x3E;Added .perlcriticrc to disable Perl::Critic policies that do not match our style (filled &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=57638&#x22; title=&#x22;Bug RT#57638&#x22;&#x3E;RT#57638&#x3C;/a&#x3E;, &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=57639&#x22; title=&#x22;Bug RT#57639&#x22;&#x3E;RT#57639&#x3C;/a&#x3E;, &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=57640&#x22; title=&#x22;Bug RT#57640&#x22;&#x3E;RT#57640&#x3C;/a&#x3E;, &#x3C;a href=&#x22;https://rt.cpan.org/Public/Bug/Display.html?id=57807&#x22; title=&#x22;Bug RT#57807&#x22;&#x3E;RT#57807&#x3C;/a&#x3E; for issues with default policies).&#x3C;/li&#x3E;
 &#x3C;li&#x3E;Made some suggestions from Perl::Critic. Reduced number of lines, so improved test coverage ratio.&#x3C;/li&#x3E;
 &#x3C;li&#x3E;Test coverage: 94.5%.&#x3C;/li&#x3E;
 &#x3C;li&#x3E;Author build system: fixed the &#x27;Build tag&#x27;.&#x3C;/li&#x3E;
@@ -58,10 +69,10 @@
 <title>POE-Component-Schedule 0.94_02</title>
 <link>http://search.cpan.org/~dolmen/POE-Component-Schedule-0.94_02/</link>
 <description>&#x3C;ul&#x3E;
-&#x3C;li&#x3E;Author build system: Changes.{rss,yml} generation is now automated in the build process by extending Module::Build (see &#x27;inc/MY/Build.pm&#x27; and &#x27;inc/MY/Build/Changes.pm&#x27;).&#x3C;/li&#x3E;
+&#x3C;li&#x3E;Author build system: Changes.{rss,yml} generation is now automated by extending Module::Build (see &#x27;inc/MY/Build.pm&#x27; and &#x27;inc/MY/Build/Changes.pm&#x27;).&#x3C;/li&#x3E;
 &#x3C;li&#x3E;Added &#x27;t/90-critic.t&#x27; to &#x27;MANIFEST.SKIP&#x27; as it is the main cause of CPAN Testers failures.&#x3C;/li&#x3E;
-&#x3C;li&#x3E;Drop &#x27;Makefile.PL&#x27; generation by &#x27;Module::Build&#x27;.&#x3C;/li&#x3E;
-&#x3C;li&#x3E;Transformed &#x27;make-svn-tag.pl&#x27; into a Build target (tag).&#x3C;/li&#x3E;
+&#x3C;li&#x3E;Author build system: Drop &#x27;Makefile.PL&#x27; generation by Module::Build.&#x3C;/li&#x3E;
+&#x3C;li&#x3E;Author build system: Transformed &#x27;make-svn-tag.pl&#x27; into a Build target (&#x27;tag&#x27;).&#x3C;/li&#x3E;
 &#x3C;/ul&#x3E;</description>
 <dc:creator>Olivier Mengu&#xE9; &#x3C;dolmen@cpan.org&#x3E;</dc:creator>
 <dc:date>2010-05-18T01:02+02:00</dc:date>
